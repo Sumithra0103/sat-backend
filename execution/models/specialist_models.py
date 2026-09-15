@@ -76,6 +76,36 @@ def check_person2_adapter_status() -> Dict[str, Any]:
     }
 
 
+def check_person4_adapter_status() -> Dict[str, Any]:
+    """
+    Scans execution/adapters/person4_change/ directory for configuration and weight files.
+    """
+    import os
+    from pathlib import Path
+    adapter_dir = Path(__file__).resolve().parent.parent / "adapters" / "person4_change"
+    safetensors_path = adapter_dir / "change_model.safetensors"
+    bin_path = adapter_dir / "change_model.bin"
+    pth_path = adapter_dir / "change_model.pth"
+
+    weights_file = None
+    for p in [safetensors_path, bin_path, pth_path]:
+        if p.exists():
+            weights_file = p
+            break
+
+    weights_found = weights_file is not None
+
+    return {
+        "adapter_dir": str(adapter_dir),
+        "config_found": (adapter_dir / "config.json").exists(),
+        "preprocessor_found": (adapter_dir / "preprocessor_config.json").exists(),
+        "weights_found": weights_found,
+        "weights_path": str(weights_file) if weights_found else None,
+        "file_size_bytes": os.path.getsize(weights_file) if weights_found else 0
+    }
+
+
+
 
 class RSVQAModel(SpecialistModelBase):
     """
@@ -348,11 +378,46 @@ class RSChangeDetectionModel(SpecialistModelBase):
 
 
 
+# Custom Model Binding Registry for Person 5 (Cross-Modal Fusion Lead)
+_REGISTERED_CROSSMODAL_MODEL = None
+
+
+def register_crossmodal_model(model_instance: Any):
+    """
+    Registers custom Optical-SAR cross-modal model instance from Person 5 (Cross-Modal Fusion Lead).
+    Expects model_instance to expose predict(query, images, parameters) -> dict contract.
+    """
+    global _REGISTERED_CROSSMODAL_MODEL
+    _REGISTERED_CROSSMODAL_MODEL = model_instance
+
+
+def get_registered_crossmodal_model() -> Optional[Any]:
+    """Returns registered custom crossmodal model instance or None."""
+    global _REGISTERED_CROSSMODAL_MODEL
+    return _REGISTERED_CROSSMODAL_MODEL
+
+
+def check_person5_adapter_status() -> Dict[str, Any]:
+    """
+    Scans execution/adapters/person5_crossmodal/ directory for configuration files.
+    """
+    import os
+    from pathlib import Path
+    adapter_dir = Path(__file__).resolve().parent.parent / "adapters" / "person5_crossmodal"
+
+    return {
+        "adapter_dir": str(adapter_dir),
+        "config_found": (adapter_dir / "config.json").exists(),
+        "preprocessor_found": (adapter_dir / "preprocessor_config.json").exists(),
+    }
+
+
 class RSCrossModalFusionModel(SpecialistModelBase):
     """
     Optical-SAR Cross-Modal Joint Analysis Model.
     Fine-tuned on BigEarthNet-MM and ISRO/SAC Cartosat-2S + RISAT SAR pairs.
     Fuses optical spectral bands with SAR microwave backscatter for cloud-resilient analysis.
+    Supports dynamic binding of custom models from Person 5 (Cross-Modal Fusion Lead).
     """
     def __init__(self):
         super().__init__(
@@ -362,6 +427,31 @@ class RSCrossModalFusionModel(SpecialistModelBase):
         )
 
     def predict(self, query: str, batch: PreprocessedBatch, parameters: Dict[str, Any]) -> Dict[str, Any]:
+        # Check if Person 5 custom model binding is registered
+        custom_model = get_registered_crossmodal_model()
+        if custom_model is not None and hasattr(custom_model, "predict") and callable(custom_model.predict):
+            try:
+                raw_images = getattr(batch, "raw_images", []) if batch else []
+                if not raw_images and batch and hasattr(batch, "metadata"):
+                    raw_images = [batch.metadata]
+
+                custom_res = custom_model.predict(query=query, images=raw_images, parameters=parameters)
+                if isinstance(custom_res, dict):
+                    feat = custom_res.get("identified_classes", custom_res.get("classified_features", {}))
+                    return {
+                        "joint_analysis_summary": str(custom_res.get("joint_analysis_summary", "Optical spectral bands and SAR backscatter were jointly analyzed.")),
+                        "identified_classes": feat,
+                        "classified_features": feat,
+                        "cloud_masking_applied": bool(custom_res.get("cloud_masking_applied", True)),
+                        "fusion_method": str(custom_res.get("fusion_method", "cross_attention")),
+                        "confidence": float(custom_res.get("confidence", 0.945)),
+                        "domain_adaptation": str(getattr(custom_model, "training_dataset", self.training_dataset)),
+                        "backbone": str(getattr(custom_model, "backbone", self.backbone))
+                    }
+
+            except Exception:
+                pass
+
         fusion_method = parameters.get("fusion_method", "cross_attention")
 
         return {
@@ -399,3 +489,4 @@ def get_specialist_model_for_agent(agent_id: str) -> SpecialistModelBase:
     else:
         # Default to RS-VQA baseline
         return RSVQAModel()
+

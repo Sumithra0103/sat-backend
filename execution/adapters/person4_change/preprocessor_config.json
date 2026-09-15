@@ -1,0 +1,22 @@
+{
+  "input_type": "BI_TEMPORAL_IMAGE_PAIR",
+  "image_before": "T1",
+  "image_after": "T2",
+  "channels": 3,
+  "channel_format": "RGB",
+  "input_dtype": "float32",
+  "input_range_before_normalization": "[0,255]",
+  "normalization": "divide_by_255",
+  "model_input_size": [
+    256,
+    256
+  ],
+  "resize_method": "bilinear",
+  "output_probability_resize_method": "bilinear",
+  "output_change_mask_resize_method": "nearest",
+  "output_size": "original_input_image_size",
+  "change_threshold": 0.5,
+  "co_registration": "assumed_spatially_aligned",
+  "co_registration_performed_by_model": false,
+  "supported_image_loading": "PIL RGB-readable images"
+}

@@ -1,0 +1,10 @@
+{
+  "model_name": "Person4-SiamUnet-CDVQA",
+  "backbone": "BiTemporal-SiamUnet-ResNet50",
+  "architecture": "Siamese U-Net + CDVQA Head",
+  "training_dataset": "CDVQA, LEVIR-CD",
+  "task_type": "BITEMPORAL_CHANGE_DETECTION",
+  "input_modalities": ["OPTICAL", "OPTICAL"],
+  "num_classes": 2,
+  "default_confidence_threshold": 0.88
+}

@@ -1,0 +1,9 @@
+{
+  "model_name": "SatQuery-OpticalSAR-CrossAttn-Net-V5.0",
+  "backbone": "OpticalSAR-CrossAttn-Net",
+  "architecture": "Cross-Attention Dual-Stream Optical-SAR Fusion",
+  "training_dataset": "BigEarthNet-MM, ISRO/SAC Cartosat-2S + RISAT SAR Benchmark",
+  "task_type": "CROSS_MODAL_FUSION",
+  "input_modalities": ["OPTICAL", "SAR"],
+  "default_confidence_threshold": 0.945
+}

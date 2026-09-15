@@ -295,6 +295,15 @@ class SatQueryEngine:
         from execution.models.specialist_models import register_vlm_model as _reg_vlm
         _reg_vlm(custom_model_instance)
 
+    def register_crossmodal_model(self, custom_model_instance: Any):
+        """
+        Registers custom Optical-SAR cross-modal model from Person 5 (Cross-Modal Fusion Lead).
+        Enables dynamic runtime model execution for Optical-SAR cross-attention fusion queries.
+        """
+        from execution.models.specialist_models import register_crossmodal_model as _reg_xm
+        _reg_xm(custom_model_instance)
+
+
 
 
     def get_session(self, session_id: str) -> Optional[ConversationSession]:

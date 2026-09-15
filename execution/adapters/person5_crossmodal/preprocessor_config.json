@@ -1,0 +1,14 @@
+{
+  "image_processor_type": "OpticalSARJointPreprocessor",
+  "do_resize": true,
+  "size": {
+    "height": 120,
+    "width": 120
+  },
+  "optical_bands": ["B02", "B03", "B04", "B08"],
+  "sar_polarizations": ["VV", "VH"],
+  "sar_min_db": -30.0,
+  "sar_max_db": 0.0,
+  "s2_scale_factor": 10000.0,
+  "co_registration_check": true
+}

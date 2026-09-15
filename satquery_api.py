@@ -14,6 +14,13 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+
 _ROOT_DIR = Path(__file__).resolve().parent
 for _sub in [_ROOT_DIR / "agent registry", _ROOT_DIR / "routing", _ROOT_DIR / "query understanding", _ROOT_DIR / "trace"]:
     if str(_sub) not in sys.path:
@@ -430,7 +437,46 @@ def register_vlm_model_endpoint(payload: Dict[str, Any]):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
+@app.post("/api/models/register/crossmodal", tags=["Model Binding"])
+def register_crossmodal_model_endpoint(payload: Dict[str, Any]):
+    """
+    Registers model metadata and binding for Person 5 (Cross-Modal Fusion Lead).
+    Exposes dynamic binding telemetry for Person 5's Optical-SAR cross-attention fusion model.
+    """
+    try:
+        model_name = payload.get("model_name", "SatQuery-OpticalSAR-CrossAttn-Net-V5.0")
+        backbone = payload.get("backbone", "OpticalSAR-CrossAttn-Net")
+        dataset = payload.get("training_dataset", "BigEarthNet-MM, ISRO/SAC Cartosat-2S + RISAT SAR Benchmark")
+
+        class Person5CrossModalModel:
+            def __init__(self, name, bb, ds):
+                self.model_name = name
+                self.backbone = bb
+                self.training_dataset = ds
+
+            def predict(self, query, images, parameters):
+                from fusion.person5_wrapper import predict as p5_predict
+                return p5_predict(query, images, parameters)
+
+        p5_instance = Person5CrossModalModel(model_name, backbone, dataset)
+        engine.register_crossmodal_model(p5_instance)
+
+        return {
+            "status": "success",
+            "message": f"Person 5 Cross-Modal Optical-SAR model '{model_name}' successfully bound to SatQuery AI Engine.",
+            "metadata": {
+                "model_name": model_name,
+                "backbone": backbone,
+                "training_dataset": dataset,
+                "target_task": "CROSS_MODAL_FUSION"
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
 if __name__ == "__main__":
+
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run("satquery_api:app", host="0.0.0.0", port=port, reload=False)
