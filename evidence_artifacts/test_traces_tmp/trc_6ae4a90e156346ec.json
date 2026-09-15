@@ -1,0 +1,99 @@
+{
+  "trace_id": "trc_6ae4a90e156346ec",
+  "request_id": "REQ_RETRY_003",
+  "created_at": 1789410131.7934525,
+  "updated_at": 1789410131.7938228,
+  "iso_created_at": "2026-09-14T18:22:11.793453+00:00",
+  "query": "Detect temporal change.",
+  "image_inputs": [],
+  "query_understanding": null,
+  "router_decision": null,
+  "selected_agents": [],
+  "spans": [
+    {
+      "span_id": "spn_df27299129cf",
+      "parent_span_id": null,
+      "name": "Change Detection Agent",
+      "component": "agent",
+      "agent_id": "change_agent",
+      "agent_name": "Change Detection Agent",
+      "agent_version": "1.0.0",
+      "start_time": 1789410131.7936275,
+      "end_time": 1789410131.7937744,
+      "duration_ms": 0.15,
+      "status": "SUCCESS",
+      "confidence": 0.88,
+      "input_references": {},
+      "output_references": {
+        "raw_output": {
+          "change_detected": true
+        },
+        "execution_id": null,
+        "agent_id": null
+      },
+      "evidence_references": [],
+      "parameters": {},
+      "retries": 1,
+      "retry_history": [
+        {
+          "retry_number": 1,
+          "timestamp": 1789410131.7936766,
+          "error": "Connection reset by peer"
+        }
+      ],
+      "fallbacks": 0,
+      "fallback_history": [],
+      "error": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt_spn_f5f79a68b32b",
+      "timestamp": 1789410131.7934525,
+      "iso_timestamp": "2026-09-14T18:22:11.793552+00:00",
+      "event_type": "trace_started",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_6ae4a90e156346ec started for Request REQ_RETRY_003",
+      "payload": {
+        "query": "Detect temporal change.",
+        "image_count": 0
+      }
+    },
+    {
+      "event_id": "evt_spn_731feb0daec0",
+      "timestamp": 1789410131.7936766,
+      "iso_timestamp": "2026-09-14T18:22:11.793747+00:00",
+      "event_type": "span_retry",
+      "component": "agent",
+      "status": "warning",
+      "message": "Retry #1 for span spn_df27299129cf: Connection reset by peer",
+      "payload": {
+        "span_id": "spn_df27299129cf",
+        "retry_count": 1,
+        "error": "Connection reset by peer"
+      }
+    },
+    {
+      "event_id": "evt_spn_5311ecda2472",
+      "timestamp": 1789410131.7938228,
+      "iso_timestamp": "2026-09-14T18:22:11.793871+00:00",
+      "event_type": "trace_finalized",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_6ae4a90e156346ec finalized with status SUCCESS",
+      "payload": {
+        "total_duration_ms": 0.37,
+        "final_status": "SUCCESS"
+      }
+    }
+  ],
+  "total_duration_ms": 0.37,
+  "status": "SUCCESS",
+  "metrics": {
+    "span_count": 1,
+    "successful_spans": 1,
+    "failed_spans": 0,
+    "fallback_spans": 0
+  }
+}

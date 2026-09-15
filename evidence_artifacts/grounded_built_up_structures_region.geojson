@@ -1,0 +1,35 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          72.81,
+          18.91
+        ],
+        [
+          72.85,
+          18.91
+        ],
+        [
+          72.85,
+          18.945
+        ],
+        [
+          72.81,
+          18.945
+        ],
+        [
+          72.81,
+          18.91
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "entity": "built_up_infrastructure",
+    "area_hectares": 192.6,
+    "vrsbench_iou_score": 0.852
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          72.825,
+          18.935
+        ],
+        [
+          72.875,
+          18.935
+        ],
+        [
+          72.875,
+          18.98
+        ],
+        [
+          72.835,
+          18.985
+        ],
+        [
+          72.825,
+          18.935
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "entity": "water_body",
+    "area_hectares": 328.4,
+    "vrsbench_iou_score": 0.884
+  }
+}

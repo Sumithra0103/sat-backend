@@ -1,0 +1,99 @@
+{
+  "trace_id": "trc_093cccb529274649",
+  "request_id": "REQ_FALLBACK_004",
+  "created_at": 1789410116.6977024,
+  "updated_at": 1789410116.6982162,
+  "iso_created_at": "2026-09-14T18:21:56.697702+00:00",
+  "query": "Perform optical SAR joint analysis.",
+  "image_inputs": [],
+  "query_understanding": null,
+  "router_decision": null,
+  "selected_agents": [],
+  "spans": [
+    {
+      "span_id": "spn_dc9e76f7f09d",
+      "parent_span_id": null,
+      "name": "Primary SAR Fusion Model",
+      "component": "agent",
+      "agent_id": "sar_fusion_primary",
+      "agent_name": "Primary SAR Fusion Model",
+      "agent_version": "1.0.0",
+      "start_time": 1789410116.6979532,
+      "end_time": 1789410116.698161,
+      "duration_ms": 0.21,
+      "status": "FALLBACK",
+      "confidence": 0.79,
+      "input_references": {},
+      "output_references": {
+        "raw_output": {
+          "built_up_area_ha": 45.2
+        },
+        "execution_id": null,
+        "agent_id": null
+      },
+      "evidence_references": [],
+      "parameters": {},
+      "retries": 0,
+      "retry_history": [],
+      "fallbacks": 1,
+      "fallback_history": [
+        {
+          "fallback_agent_id": "sar_fusion_secondary_lightweight",
+          "reason": "Primary SAR fusion model timeout after 30s",
+          "timestamp": 1789410116.6980298
+        }
+      ],
+      "error": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt_spn_9fab39a748c6",
+      "timestamp": 1789410116.6977024,
+      "iso_timestamp": "2026-09-14T18:21:56.697886+00:00",
+      "event_type": "trace_started",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_093cccb529274649 started for Request REQ_FALLBACK_004",
+      "payload": {
+        "query": "Perform optical SAR joint analysis.",
+        "image_count": 0
+      }
+    },
+    {
+      "event_id": "evt_spn_00ce2d507a7b",
+      "timestamp": 1789410116.6980298,
+      "iso_timestamp": "2026-09-14T18:21:56.698130+00:00",
+      "event_type": "span_fallback",
+      "component": "agent",
+      "status": "warning",
+      "message": "Fallback triggered for span spn_dc9e76f7f09d to agent sar_fusion_secondary_lightweight",
+      "payload": {
+        "span_id": "spn_dc9e76f7f09d",
+        "fallback_agent_id": "sar_fusion_secondary_lightweight",
+        "reason": "Primary SAR fusion model timeout after 30s"
+      }
+    },
+    {
+      "event_id": "evt_spn_8a918ec8fb22",
+      "timestamp": 1789410116.6982162,
+      "iso_timestamp": "2026-09-14T18:21:56.698293+00:00",
+      "event_type": "trace_finalized",
+      "component": "trace_service",
+      "status": "failure",
+      "message": "Trace trc_093cccb529274649 finalized with status DEGRADED",
+      "payload": {
+        "total_duration_ms": 0.51,
+        "final_status": "DEGRADED"
+      }
+    }
+  ],
+  "total_duration_ms": 0.51,
+  "status": "DEGRADED",
+  "metrics": {
+    "span_count": 1,
+    "successful_spans": 0,
+    "failed_spans": 0,
+    "fallback_spans": 1
+  }
+}

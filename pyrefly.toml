@@ -1,0 +1,8 @@
+python-interpreter-path = "routing/.venv/Scripts/python.exe"
+search-path = [
+    ".",
+    "routing",
+    "agent registry",
+    "query understanding",
+    "execution"
+]

@@ -1,0 +1,393 @@
+{
+  "trace_id": "trc_932cd986ec74433c",
+  "request_id": "Q_af6fece5",
+  "created_at": 1789453617.545522,
+  "updated_at": 1789453617.5485744,
+  "iso_created_at": "2026-09-15T06:26:57.545522+00:00",
+  "query": "Describe the land-cover and major objects visible in this image.",
+  "image_inputs": [
+    {
+      "file_name": "test_opt.tif",
+      "format": "GEOTIFF",
+      "modality": "OPTICAL"
+    }
+  ],
+  "query_understanding": {},
+  "router_decision": {
+    "plan_id": "plan_ff7874f7",
+    "query_id": "qo_e8a15ee3",
+    "routing_status": "success",
+    "requirements": {
+      "query_id": "qo_e8a15ee3",
+      "resolved_query": "Describe the land-cover and major objects visible in this image.",
+      "primary_capability": "scene_captioning",
+      "secondary_capabilities": [
+        "single_image_vqa"
+      ],
+      "required_modality": "optical",
+      "supported_formats": [
+        "tiff",
+        "geotiff"
+      ],
+      "benchmark_reference": "VRSBench / RSVQA",
+      "target_classes": [
+        "land-cover"
+      ],
+      "image_count": 1,
+      "temporal_structure": "SINGLE_IMAGE",
+      "max_acceptable_latency_ms": 2500,
+      "requires_cloud_resilience": false,
+      "requires_gpu": false
+    },
+    "candidate_evaluations": [
+      {
+        "agent_id": "rs-caption-agent",
+        "name": "Remote Sensing Scene Description & Captioning Agent",
+        "capability_score": 1.0,
+        "modality_score": 1.0,
+        "adaptation_score": 0.85,
+        "latency_score": 0.986,
+        "health_score": 1.0,
+        "composite_score": 0.9611,
+        "rejection_reason": null
+      }
+    ],
+    "selected_agent_id": "rs-caption-agent",
+    "steps": [
+      {
+        "step_id": "plan_ff7874f7_prep",
+        "step_type": "preprocessing",
+        "agent_id": "system_preprocessor",
+        "agent_name": "Geospatial Input Preprocessor & Validator",
+        "endpoint_url": "internal://preprocessor",
+        "inputs": [
+          {
+            "image_id": "img_1",
+            "file_name": "test_opt.tif",
+            "format": "GeoTIFF",
+            "modality": "OPTICAL",
+            "sensor_type": "Generic_Optical",
+            "timestamp": null,
+            "spatial_bounds": null,
+            "resolution_m": null,
+            "is_co_registered": false
+          }
+        ],
+        "parameters": {
+          "image_count": 1,
+          "temporal_structure": "SINGLE_IMAGE",
+          "verify_geospatial_bounds": true,
+          "normalize_bands": true
+        },
+        "timeout_seconds": 10.0,
+        "depends_on": []
+      },
+      {
+        "step_id": "plan_ff7874f7_infer",
+        "step_type": "specialist_inference",
+        "agent_id": "rs-caption-agent",
+        "agent_name": "Remote Sensing Scene Description & Captioning Agent",
+        "endpoint_url": "http://localhost:8004/v1/caption",
+        "inputs": [
+          {
+            "depends_on_step": "plan_ff7874f7_prep"
+          }
+        ],
+        "parameters": {
+          "detail_level": "comprehensive",
+          "include_landcover_stats": true
+        },
+        "timeout_seconds": 30.0,
+        "depends_on": [
+          "plan_ff7874f7_prep"
+        ]
+      },
+      {
+        "step_id": "plan_ff7874f7_post",
+        "step_type": "evidence_grounding",
+        "agent_id": "system_grounder",
+        "agent_name": "Evidence Grounding & Spatial Summarizer",
+        "endpoint_url": "internal://evidence_grounder",
+        "inputs": [
+          {
+            "depends_on_step": "plan_ff7874f7_infer"
+          }
+        ],
+        "parameters": {
+          "target_classes": [
+            "land-cover"
+          ],
+          "generate_visual_evidence": true,
+          "calculate_confidence": true
+        },
+        "timeout_seconds": 15.0,
+        "depends_on": [
+          "plan_ff7874f7_infer"
+        ]
+      }
+    ],
+    "fallback_routes": [],
+    "auditable_summary": {
+      "query_id": "qo_e8a15ee3",
+      "selected_task": "scene_captioning",
+      "primary_agent_id": "rs-caption-agent",
+      "primary_agent_name": "Remote Sensing Scene Description & Captioning Agent",
+      "models_and_tools": [
+        "Geospatial Input Preprocessor & Validator",
+        "Remote Sensing Scene Description & Captioning Agent",
+        "Evidence Grounding & Spatial Summarizer"
+      ],
+      "applied_parameters": {
+        "detail_level": "comprehensive",
+        "include_landcover_stats": true
+      },
+      "benchmark_dataset": "VRSBench / RSVQA",
+      "input_configuration": {
+        "image_count": 1,
+        "modality": "optical",
+        "temporal_structure": "SINGLE_IMAGE",
+        "formats": [
+          "tiff",
+          "geotiff"
+        ]
+      },
+      "routing_confidence": 0.9611,
+      "fallback_assigned": null
+    },
+    "router_trace": [
+      {
+        "timestamp": "2026-09-15T06:26:57.546194+00:00",
+        "stage": "STEP_1_RECEIVE",
+        "action": "Receive Query Plan",
+        "status": "SUCCESS",
+        "details": {
+          "query_id": "qo_e8a15ee3",
+          "raw_query": "Describe the land-cover and major objects visible in this image."
+        }
+      },
+      {
+        "timestamp": "2026-09-15T06:26:57.546204+00:00",
+        "stage": "STEP_2_VALIDATE",
+        "action": "Validate Query Plan",
+        "status": "SUCCESS",
+        "details": {
+          "validation_status": "PASSED"
+        }
+      },
+      {
+        "timestamp": "2026-09-15T06:26:57.546245+00:00",
+        "stage": "STEP_3_4_REQUIREMENTS",
+        "action": "Extract Requirements & Capabilities",
+        "status": "SUCCESS",
+        "details": {
+          "primary_capability": "scene_captioning",
+          "required_modality": "optical",
+          "temporal_structure": "SINGLE_IMAGE",
+          "benchmark_reference": "VRSBench / RSVQA",
+          "target_classes": [
+            "land-cover"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-09-15T06:26:57.547224+00:00",
+        "stage": "STEP_5_6_DISCOVERY",
+        "action": "Query Registry & Retrieve Candidates",
+        "status": "SUCCESS",
+        "details": {
+          "candidate_count": 1,
+          "candidate_ids": [
+            "rs-caption-agent"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-09-15T06:26:57.547257+00:00",
+        "stage": "STEP_7_FILTER",
+        "action": "Filter Candidates",
+        "status": "SUCCESS",
+        "details": {
+          "qualified_count": 1,
+          "qualified_ids": [
+            "rs-caption-agent"
+          ],
+          "disqualified_count": 0,
+          "disqualified_reasons": {}
+        }
+      },
+      {
+        "timestamp": "2026-09-15T06:26:57.547298+00:00",
+        "stage": "STEP_8_SCORE",
+        "action": "Score and Rank Candidates",
+        "status": "SUCCESS",
+        "details": {
+          "ranked_scores": [
+            {
+              "agent_id": "rs-caption-agent",
+              "composite": 0.9611,
+              "capability": 1.0,
+              "adaptation": 0.85,
+              "modality": 1.0
+            }
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-09-15T06:26:57.547380+00:00",
+        "stage": "STEP_12_PLAN_GENERATED",
+        "action": "Generate Execution Plan",
+        "status": "SUCCESS",
+        "details": {
+          "plan_id": "plan_ff7874f7",
+          "selected_agent": "rs-caption-agent",
+          "steps_count": 3,
+          "fallback_count": 0
+        }
+      }
+    ],
+    "rejection_errors": []
+  },
+  "selected_agents": [
+    {
+      "step_id": "plan_ff7874f7_prep",
+      "agent_id": "system_preprocessor",
+      "agent_name": "Geospatial Input Preprocessor & Validator",
+      "agent_version": "1.0.0",
+      "capability": "preprocessing",
+      "parameters": {
+        "image_count": 1,
+        "temporal_structure": "SINGLE_IMAGE",
+        "verify_geospatial_bounds": true,
+        "normalize_bands": true
+      }
+    },
+    {
+      "step_id": "plan_ff7874f7_infer",
+      "agent_id": "rs-caption-agent",
+      "agent_name": "Remote Sensing Scene Description & Captioning Agent",
+      "agent_version": "1.0.0",
+      "capability": "specialist_inference",
+      "parameters": {
+        "detail_level": "comprehensive",
+        "include_landcover_stats": true
+      }
+    },
+    {
+      "step_id": "plan_ff7874f7_post",
+      "agent_id": "system_grounder",
+      "agent_name": "Evidence Grounding & Spatial Summarizer",
+      "agent_version": "1.0.0",
+      "capability": "evidence_grounding",
+      "parameters": {
+        "target_classes": [
+          "land-cover"
+        ],
+        "generate_visual_evidence": true,
+        "calculate_confidence": true
+      }
+    }
+  ],
+  "spans": [
+    {
+      "span_id": "spn_46103ff88713",
+      "parent_span_id": null,
+      "name": "Execution step (rs-caption-agent)",
+      "component": "agent",
+      "agent_id": "rs-caption-agent",
+      "agent_name": "Execution step (rs-caption-agent)",
+      "agent_version": "1.0.0",
+      "start_time": 1789453617.548486,
+      "end_time": 1789453617.5485046,
+      "duration_ms": 0.02,
+      "status": "SUCCESS",
+      "confidence": 0.92,
+      "input_references": {
+        "image_inputs": [
+          {
+            "file_name": "test_opt.tif",
+            "format": "GEOTIFF",
+            "modality": "OPTICAL"
+          }
+        ],
+        "resolved_query": "Describe the land-cover and major objects visible in this image."
+      },
+      "output_references": {
+        "raw_output": null,
+        "execution_id": "exec_plan_ff7874f7_infer_73c9a1",
+        "agent_id": null
+      },
+      "evidence_references": [],
+      "parameters": {},
+      "retries": 0,
+      "retry_history": [],
+      "fallbacks": 0,
+      "fallback_history": [],
+      "error": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt_spn_42e13f0f74c9",
+      "timestamp": 1789453617.545522,
+      "iso_timestamp": "2026-09-15T06:26:57.545624+00:00",
+      "event_type": "trace_started",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_932cd986ec74433c started for Request Q_af6fece5",
+      "payload": {
+        "query": "Describe the land-cover and major objects visible in this image.",
+        "image_count": 1
+      }
+    },
+    {
+      "event_id": "evt_spn_0809fdfbfb0c",
+      "timestamp": 1789453617.5461485,
+      "iso_timestamp": "2026-09-15T06:26:57.546168+00:00",
+      "event_type": "query_understanding_completed",
+      "component": "query_understanding",
+      "status": "success",
+      "message": "Query understanding completed successfully",
+      "payload": {
+        "tasks": [],
+        "modalities": []
+      }
+    },
+    {
+      "event_id": "evt_spn_b6a8b5a33c94",
+      "timestamp": 1789453617.5473897,
+      "iso_timestamp": "2026-09-15T06:26:57.547474+00:00",
+      "event_type": "router_decision_completed",
+      "component": "router",
+      "status": "success",
+      "message": "Router selected 3 agent(s)",
+      "payload": {
+        "selected_agent_ids": [
+          "system_preprocessor",
+          "rs-caption-agent",
+          "system_grounder"
+        ]
+      }
+    },
+    {
+      "event_id": "evt_spn_ad3bcf4735d8",
+      "timestamp": 1789453617.5485744,
+      "iso_timestamp": "2026-09-15T06:26:57.548596+00:00",
+      "event_type": "trace_finalized",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_932cd986ec74433c finalized with status SUCCESS",
+      "payload": {
+        "total_duration_ms": 3.05,
+        "final_status": "SUCCESS"
+      }
+    }
+  ],
+  "total_duration_ms": 3.05,
+  "status": "SUCCESS",
+  "metrics": {
+    "span_count": 1,
+    "successful_spans": 1,
+    "failed_spans": 0,
+    "fallback_spans": 0
+  }
+}

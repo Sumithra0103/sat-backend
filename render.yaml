@@ -1,0 +1,17 @@
+# Render Blueprint Infrastructure-as-Code Configuration
+# SatQuery AI Agentic Backend Web Service
+
+services:
+  - type: web
+    name: satquery-ai-backend
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "uvicorn satquery_api:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: "/health"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: PORT
+        value: 10000

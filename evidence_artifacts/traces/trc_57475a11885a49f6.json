@@ -1,0 +1,403 @@
+{
+  "trace_id": "trc_57475a11885a49f6",
+  "request_id": "Q_0435c032",
+  "created_at": 1789411852.3577564,
+  "updated_at": 1789411852.3677359,
+  "iso_created_at": "2026-09-14T18:50:52.357756+00:00",
+  "query": "Highlight water body.",
+  "image_inputs": [
+    {
+      "image_id": null,
+      "file_name": "w.tif",
+      "format": "GeoTIFF",
+      "modality": "OPTICAL",
+      "sensor_type": null,
+      "timestamp": null,
+      "bounds": null,
+      "is_co_registered": null
+    }
+  ],
+  "query_understanding": {},
+  "router_decision": {
+    "plan_id": "plan_8aaa2e7d",
+    "query_id": "qo_05666118",
+    "routing_status": "success",
+    "requirements": {
+      "query_id": "qo_05666118",
+      "resolved_query": "Highlight water body.",
+      "primary_capability": "region_grounding",
+      "secondary_capabilities": [
+        "single_image_vqa"
+      ],
+      "required_modality": "optical",
+      "supported_formats": [
+        "tiff",
+        "geotiff"
+      ],
+      "benchmark_reference": "VRSBench",
+      "target_classes": [
+        "water body"
+      ],
+      "image_count": 1,
+      "temporal_structure": "SINGLE_IMAGE",
+      "max_acceptable_latency_ms": 2500,
+      "requires_cloud_resilience": false,
+      "requires_gpu": false
+    },
+    "candidate_evaluations": [
+      {
+        "agent_id": "rs-grounding-agent",
+        "name": "Remote Sensing Text-Guided Region Grounding Agent",
+        "capability_score": 1.0,
+        "modality_score": 1.0,
+        "adaptation_score": 0.5,
+        "latency_score": 0.983,
+        "health_score": 1.0,
+        "composite_score": 0.8733,
+        "rejection_reason": null
+      }
+    ],
+    "selected_agent_id": "rs-grounding-agent",
+    "steps": [
+      {
+        "step_id": "plan_8aaa2e7d_prep",
+        "step_type": "preprocessing",
+        "agent_id": "system_preprocessor",
+        "agent_name": "Geospatial Input Preprocessor & Validator",
+        "endpoint_url": "internal://preprocessor",
+        "inputs": [
+          {
+            "image_id": null,
+            "file_name": "w.tif",
+            "format": "GeoTIFF",
+            "modality": "OPTICAL",
+            "sensor_type": "Generic_Optical",
+            "timestamp": null,
+            "spatial_bounds": null,
+            "resolution_m": null,
+            "is_co_registered": null
+          }
+        ],
+        "parameters": {
+          "image_count": 1,
+          "temporal_structure": "SINGLE_IMAGE",
+          "verify_geospatial_bounds": true,
+          "normalize_bands": true
+        },
+        "timeout_seconds": 10.0,
+        "depends_on": []
+      },
+      {
+        "step_id": "plan_8aaa2e7d_infer",
+        "step_type": "specialist_inference",
+        "agent_id": "rs-grounding-agent",
+        "agent_name": "Remote Sensing Text-Guided Region Grounding Agent",
+        "endpoint_url": "http://localhost:8002/v1/grounding",
+        "inputs": [
+          {
+            "depends_on_step": "plan_8aaa2e7d_prep"
+          }
+        ],
+        "parameters": {
+          "box_threshold": 0.35,
+          "text_threshold": 0.3
+        },
+        "timeout_seconds": 30.0,
+        "depends_on": [
+          "plan_8aaa2e7d_prep"
+        ]
+      },
+      {
+        "step_id": "plan_8aaa2e7d_post",
+        "step_type": "evidence_grounding",
+        "agent_id": "system_grounder",
+        "agent_name": "Evidence Grounding & Spatial Summarizer",
+        "endpoint_url": "internal://evidence_grounder",
+        "inputs": [
+          {
+            "depends_on_step": "plan_8aaa2e7d_infer"
+          }
+        ],
+        "parameters": {
+          "target_classes": [
+            "water body"
+          ],
+          "generate_visual_evidence": true,
+          "calculate_confidence": true
+        },
+        "timeout_seconds": 15.0,
+        "depends_on": [
+          "plan_8aaa2e7d_infer"
+        ]
+      }
+    ],
+    "fallback_routes": [],
+    "auditable_summary": {
+      "query_id": "qo_05666118",
+      "selected_task": "region_grounding",
+      "primary_agent_id": "rs-grounding-agent",
+      "primary_agent_name": "Remote Sensing Text-Guided Region Grounding Agent",
+      "models_and_tools": [
+        "Geospatial Input Preprocessor & Validator",
+        "Remote Sensing Text-Guided Region Grounding Agent",
+        "Evidence Grounding & Spatial Summarizer"
+      ],
+      "applied_parameters": {
+        "box_threshold": 0.35,
+        "text_threshold": 0.3
+      },
+      "benchmark_dataset": "VRSBench",
+      "input_configuration": {
+        "image_count": 1,
+        "modality": "optical",
+        "temporal_structure": "SINGLE_IMAGE",
+        "formats": [
+          "tiff",
+          "geotiff"
+        ]
+      },
+      "routing_confidence": 0.8733,
+      "fallback_assigned": null
+    },
+    "router_trace": [
+      {
+        "timestamp": "2026-09-14T18:50:52.358377+00:00",
+        "stage": "STEP_1_RECEIVE",
+        "action": "Receive Query Plan",
+        "status": "SUCCESS",
+        "details": {
+          "query_id": "qo_05666118",
+          "raw_query": "Highlight water body."
+        }
+      },
+      {
+        "timestamp": "2026-09-14T18:50:52.358414+00:00",
+        "stage": "STEP_2_VALIDATE",
+        "action": "Validate Query Plan",
+        "status": "SUCCESS",
+        "details": {
+          "validation_status": "PASSED"
+        }
+      },
+      {
+        "timestamp": "2026-09-14T18:50:52.358485+00:00",
+        "stage": "STEP_3_4_REQUIREMENTS",
+        "action": "Extract Requirements & Capabilities",
+        "status": "SUCCESS",
+        "details": {
+          "primary_capability": "region_grounding",
+          "required_modality": "optical",
+          "temporal_structure": "SINGLE_IMAGE",
+          "benchmark_reference": "VRSBench",
+          "target_classes": [
+            "water body"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-09-14T18:50:52.361392+00:00",
+        "stage": "STEP_5_6_DISCOVERY",
+        "action": "Query Registry & Retrieve Candidates",
+        "status": "SUCCESS",
+        "details": {
+          "candidate_count": 1,
+          "candidate_ids": [
+            "rs-grounding-agent"
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-09-14T18:50:52.361489+00:00",
+        "stage": "STEP_7_FILTER",
+        "action": "Filter Candidates",
+        "status": "SUCCESS",
+        "details": {
+          "qualified_count": 1,
+          "qualified_ids": [
+            "rs-grounding-agent"
+          ],
+          "disqualified_count": 0,
+          "disqualified_reasons": {}
+        }
+      },
+      {
+        "timestamp": "2026-09-14T18:50:52.361593+00:00",
+        "stage": "STEP_8_SCORE",
+        "action": "Score and Rank Candidates",
+        "status": "SUCCESS",
+        "details": {
+          "ranked_scores": [
+            {
+              "agent_id": "rs-grounding-agent",
+              "composite": 0.8733,
+              "capability": 1.0,
+              "adaptation": 0.5,
+              "modality": 1.0
+            }
+          ]
+        }
+      },
+      {
+        "timestamp": "2026-09-14T18:50:52.361806+00:00",
+        "stage": "STEP_12_PLAN_GENERATED",
+        "action": "Generate Execution Plan",
+        "status": "SUCCESS",
+        "details": {
+          "plan_id": "plan_8aaa2e7d",
+          "selected_agent": "rs-grounding-agent",
+          "steps_count": 3,
+          "fallback_count": 0
+        }
+      }
+    ],
+    "rejection_errors": []
+  },
+  "selected_agents": [
+    {
+      "step_id": "plan_8aaa2e7d_prep",
+      "agent_id": "system_preprocessor",
+      "agent_name": "Geospatial Input Preprocessor & Validator",
+      "agent_version": "1.0.0",
+      "capability": "preprocessing",
+      "parameters": {
+        "image_count": 1,
+        "temporal_structure": "SINGLE_IMAGE",
+        "verify_geospatial_bounds": true,
+        "normalize_bands": true
+      }
+    },
+    {
+      "step_id": "plan_8aaa2e7d_infer",
+      "agent_id": "rs-grounding-agent",
+      "agent_name": "Remote Sensing Text-Guided Region Grounding Agent",
+      "agent_version": "1.0.0",
+      "capability": "specialist_inference",
+      "parameters": {
+        "box_threshold": 0.35,
+        "text_threshold": 0.3
+      }
+    },
+    {
+      "step_id": "plan_8aaa2e7d_post",
+      "agent_id": "system_grounder",
+      "agent_name": "Evidence Grounding & Spatial Summarizer",
+      "agent_version": "1.0.0",
+      "capability": "evidence_grounding",
+      "parameters": {
+        "target_classes": [
+          "water body"
+        ],
+        "generate_visual_evidence": true,
+        "calculate_confidence": true
+      }
+    }
+  ],
+  "spans": [
+    {
+      "span_id": "spn_c63ad8379700",
+      "parent_span_id": null,
+      "name": "Execution step (rs-grounding-agent)",
+      "component": "agent",
+      "agent_id": "rs-grounding-agent",
+      "agent_name": "Execution step (rs-grounding-agent)",
+      "agent_version": "1.0.0",
+      "start_time": 1789411852.3674912,
+      "end_time": 1789411852.3675609,
+      "duration_ms": 0.07,
+      "status": "SUCCESS",
+      "confidence": 0.89,
+      "input_references": {
+        "image_inputs": [
+          {
+            "image_id": null,
+            "file_name": "w.tif",
+            "format": "GeoTIFF",
+            "modality": "OPTICAL",
+            "sensor_type": null,
+            "timestamp": null,
+            "bounds": null,
+            "is_co_registered": null
+          }
+        ],
+        "resolved_query": "Highlight water body."
+      },
+      "output_references": {
+        "raw_output": null,
+        "execution_id": "exec_plan_8aaa2e7d_infer_738b0d",
+        "agent_id": null
+      },
+      "evidence_references": [],
+      "parameters": {},
+      "retries": 0,
+      "retry_history": [],
+      "fallbacks": 0,
+      "fallback_history": [],
+      "error": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt_spn_529337f5b3ae",
+      "timestamp": 1789411852.3577564,
+      "iso_timestamp": "2026-09-14T18:50:52.357854+00:00",
+      "event_type": "trace_started",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_57475a11885a49f6 started for Request Q_0435c032",
+      "payload": {
+        "query": "Highlight water body.",
+        "image_count": 1
+      }
+    },
+    {
+      "event_id": "evt_spn_2c9a51dfae24",
+      "timestamp": 1789411852.3583,
+      "iso_timestamp": "2026-09-14T18:50:52.358334+00:00",
+      "event_type": "query_understanding_completed",
+      "component": "query_understanding",
+      "status": "success",
+      "message": "Query understanding completed successfully",
+      "payload": {
+        "tasks": [],
+        "modalities": []
+      }
+    },
+    {
+      "event_id": "evt_spn_ec73b31b1244",
+      "timestamp": 1789411852.3618393,
+      "iso_timestamp": "2026-09-14T18:50:52.362059+00:00",
+      "event_type": "router_decision_completed",
+      "component": "router",
+      "status": "success",
+      "message": "Router selected 3 agent(s)",
+      "payload": {
+        "selected_agent_ids": [
+          "system_preprocessor",
+          "rs-grounding-agent",
+          "system_grounder"
+        ]
+      }
+    },
+    {
+      "event_id": "evt_spn_db7dd13c2f6c",
+      "timestamp": 1789411852.3677359,
+      "iso_timestamp": "2026-09-14T18:50:52.367793+00:00",
+      "event_type": "trace_finalized",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_57475a11885a49f6 finalized with status SUCCESS",
+      "payload": {
+        "total_duration_ms": 9.98,
+        "final_status": "SUCCESS"
+      }
+    }
+  ],
+  "total_duration_ms": 9.98,
+  "status": "SUCCESS",
+  "metrics": {
+    "span_count": 1,
+    "successful_spans": 1,
+    "failed_spans": 0,
+    "fallback_spans": 0
+  }
+}

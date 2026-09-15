@@ -1,0 +1,196 @@
+{
+  "trace_id": "trc_f69406096fc44eb5",
+  "request_id": "REQ_MULTI_005",
+  "created_at": 1789410116.7007542,
+  "updated_at": 1789410116.7727716,
+  "iso_created_at": "2026-09-14T18:21:56.700754+00:00",
+  "query": "Use optical and SAR images together to identify built-up areas and detect changes between dates.",
+  "image_inputs": [],
+  "query_understanding": null,
+  "router_decision": {
+    "execution_steps": [
+      {
+        "agent_id": "building_detector_v2",
+        "agent_name": "Building Detection Model",
+        "agent_version": "2.0.0"
+      },
+      {
+        "agent_id": "change_detector_v1",
+        "agent_name": "Bi-Temporal Change Model",
+        "agent_version": "1.4.0"
+      },
+      {
+        "agent_id": "vlm_summarizer",
+        "agent_name": "RS VLM Synthesizer",
+        "agent_version": "3.0.0"
+      }
+    ]
+  },
+  "selected_agents": [
+    {
+      "step_id": null,
+      "agent_id": "building_detector_v2",
+      "agent_name": "Building Detection Model",
+      "agent_version": "2.0.0",
+      "capability": null,
+      "parameters": {}
+    },
+    {
+      "step_id": null,
+      "agent_id": "change_detector_v1",
+      "agent_name": "Bi-Temporal Change Model",
+      "agent_version": "1.4.0",
+      "capability": null,
+      "parameters": {}
+    },
+    {
+      "step_id": null,
+      "agent_id": "vlm_summarizer",
+      "agent_name": "RS VLM Synthesizer",
+      "agent_version": "3.0.0",
+      "capability": null,
+      "parameters": {}
+    }
+  ],
+  "spans": [
+    {
+      "span_id": "spn_d2cea99beb14",
+      "parent_span_id": null,
+      "name": "Building Detection Model",
+      "component": "agent",
+      "agent_id": "building_detector_v2",
+      "agent_name": "Building Detection Model",
+      "agent_version": "2.0.0",
+      "start_time": 1789410116.7010026,
+      "end_time": 1789410116.7212815,
+      "duration_ms": 20.28,
+      "status": "SUCCESS",
+      "confidence": 0.92,
+      "input_references": {},
+      "output_references": {
+        "raw_output": {
+          "building_count": 142
+        },
+        "execution_id": null,
+        "agent_id": null
+      },
+      "evidence_references": [],
+      "parameters": {},
+      "retries": 0,
+      "retry_history": [],
+      "fallbacks": 0,
+      "fallback_history": [],
+      "error": null
+    },
+    {
+      "span_id": "spn_b786d293ab48",
+      "parent_span_id": null,
+      "name": "Bi-Temporal Change Model",
+      "component": "agent",
+      "agent_id": "change_detector_v1",
+      "agent_name": "Bi-Temporal Change Model",
+      "agent_version": "1.4.0",
+      "start_time": 1789410116.721401,
+      "end_time": 1789410116.7521205,
+      "duration_ms": 30.72,
+      "status": "SUCCESS",
+      "confidence": 0.89,
+      "input_references": {},
+      "output_references": {
+        "raw_output": {
+          "change_pct": 12.4
+        },
+        "execution_id": null,
+        "agent_id": null
+      },
+      "evidence_references": [],
+      "parameters": {},
+      "retries": 0,
+      "retry_history": [],
+      "fallbacks": 0,
+      "fallback_history": [],
+      "error": null
+    },
+    {
+      "span_id": "spn_99c5e5a865dd",
+      "parent_span_id": null,
+      "name": "RS VLM Synthesizer",
+      "component": "agent",
+      "agent_id": "vlm_summarizer",
+      "agent_name": "RS VLM Synthesizer",
+      "agent_version": "3.0.0",
+      "start_time": 1789410116.7522597,
+      "end_time": 1789410116.7727096,
+      "duration_ms": 20.45,
+      "status": "SUCCESS",
+      "confidence": 0.96,
+      "input_references": {},
+      "output_references": {
+        "raw_output": {
+          "summary": "142 buildings identified; 12.4% area expansion detected."
+        },
+        "execution_id": null,
+        "agent_id": null
+      },
+      "evidence_references": [],
+      "parameters": {},
+      "retries": 0,
+      "retry_history": [],
+      "fallbacks": 0,
+      "fallback_history": [],
+      "error": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt_spn_58edcf436413",
+      "timestamp": 1789410116.7007542,
+      "iso_timestamp": "2026-09-14T18:21:56.700859+00:00",
+      "event_type": "trace_started",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_f69406096fc44eb5 started for Request REQ_MULTI_005",
+      "payload": {
+        "query": "Use optical and SAR images together to identify built-up areas and detect changes between dates.",
+        "image_count": 0
+      }
+    },
+    {
+      "event_id": "evt_spn_6de52e8d7546",
+      "timestamp": 1789410116.7009249,
+      "iso_timestamp": "2026-09-14T18:21:56.700975+00:00",
+      "event_type": "router_decision_completed",
+      "component": "router",
+      "status": "success",
+      "message": "Router selected 3 agent(s)",
+      "payload": {
+        "selected_agent_ids": [
+          "building_detector_v2",
+          "change_detector_v1",
+          "vlm_summarizer"
+        ]
+      }
+    },
+    {
+      "event_id": "evt_spn_70f71eda0070",
+      "timestamp": 1789410116.7727716,
+      "iso_timestamp": "2026-09-14T18:21:56.772871+00:00",
+      "event_type": "trace_finalized",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_f69406096fc44eb5 finalized with status SUCCESS",
+      "payload": {
+        "total_duration_ms": 72.02,
+        "final_status": "SUCCESS"
+      }
+    }
+  ],
+  "total_duration_ms": 72.02,
+  "status": "SUCCESS",
+  "metrics": {
+    "span_count": 3,
+    "successful_spans": 3,
+    "failed_spans": 0,
+    "fallback_spans": 0
+  }
+}

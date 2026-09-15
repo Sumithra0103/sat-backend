@@ -1,0 +1,97 @@
+{
+  "trace_id": "trc_86c98b45adae4c98",
+  "request_id": "REQ_FAIL_002",
+  "created_at": 1789410131.791132,
+  "updated_at": 1789410131.7914934,
+  "iso_created_at": "2026-09-14T18:22:11.791132+00:00",
+  "query": "Ground urban area in image.",
+  "image_inputs": [],
+  "query_understanding": null,
+  "router_decision": null,
+  "selected_agents": [],
+  "spans": [
+    {
+      "span_id": "spn_5739fd8caf21",
+      "parent_span_id": null,
+      "name": "Grounding Model",
+      "component": "agent",
+      "agent_id": "grounding_agent",
+      "agent_name": "Grounding Model",
+      "agent_version": "1.0.0",
+      "start_time": 1789410131.791313,
+      "end_time": 1789410131.7914662,
+      "duration_ms": 0.15,
+      "status": "FAILURE",
+      "confidence": null,
+      "input_references": {},
+      "output_references": {},
+      "evidence_references": [],
+      "parameters": {},
+      "retries": 0,
+      "retry_history": [],
+      "fallbacks": 0,
+      "fallback_history": [],
+      "error": {
+        "message": "CUDA Out of Memory exception during feature extraction",
+        "details": {
+          "exception_type": "RuntimeError",
+          "device": "cuda:0"
+        },
+        "timestamp": 1789410131.791369
+      }
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt_spn_11c33f99e1e2",
+      "timestamp": 1789410131.791132,
+      "iso_timestamp": "2026-09-14T18:22:11.791260+00:00",
+      "event_type": "trace_started",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_86c98b45adae4c98 started for Request REQ_FAIL_002",
+      "payload": {
+        "query": "Ground urban area in image.",
+        "image_count": 0
+      }
+    },
+    {
+      "event_id": "evt_spn_047734e634c0",
+      "timestamp": 1789410131.7914245,
+      "iso_timestamp": "2026-09-14T18:22:11.791434+00:00",
+      "event_type": "span_error",
+      "component": "agent",
+      "status": "failure",
+      "message": "Error in span spn_5739fd8caf21: CUDA Out of Memory exception during feature extraction",
+      "payload": {
+        "span_id": "spn_5739fd8caf21",
+        "error": "CUDA Out of Memory exception during feature extraction",
+        "details": {
+          "exception_type": "RuntimeError",
+          "device": "cuda:0"
+        }
+      }
+    },
+    {
+      "event_id": "evt_spn_7a54bfc54ceb",
+      "timestamp": 1789410131.7914934,
+      "iso_timestamp": "2026-09-14T18:22:11.791598+00:00",
+      "event_type": "trace_finalized",
+      "component": "trace_service",
+      "status": "failure",
+      "message": "Trace trc_86c98b45adae4c98 finalized with status FAILED",
+      "payload": {
+        "total_duration_ms": 0.36,
+        "final_status": "FAILED"
+      }
+    }
+  ],
+  "total_duration_ms": 0.36,
+  "status": "FAILED",
+  "metrics": {
+    "span_count": 1,
+    "successful_spans": 0,
+    "failed_spans": 1,
+    "fallback_spans": 0
+  }
+}

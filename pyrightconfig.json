@@ -1,0 +1,12 @@
+{
+  "venvPath": "routing",
+  "venv": ".venv",
+  "pythonPath": "routing/.venv/Scripts/python.exe",
+  "extraPaths": [
+    ".",
+    "routing",
+    "agent registry",
+    "query understanding",
+    "execution"
+  ]
+}

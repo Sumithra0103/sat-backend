@@ -1,0 +1,15 @@
+[tool.pyrefly]
+python-interpreter-path = "routing/.venv/Scripts/python.exe"
+search-path = [
+    ".",
+    "routing",
+    "agent registry",
+    "query understanding",
+    "database"
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+    ".",
+    "database"
+]

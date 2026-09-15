@@ -1,0 +1,153 @@
+{
+  "trace_id": "trc_471768c64b5c45f4",
+  "request_id": "REQ_TEST_001",
+  "created_at": 1789410116.6308217,
+  "updated_at": 1789410116.6818042,
+  "iso_created_at": "2026-09-14T18:21:56.630822+00:00",
+  "query": "Describe the land-cover and major objects visible in this optical image.",
+  "image_inputs": [
+    {
+      "file_name": "sentinel2_sample.tif",
+      "format": "GEOTIFF",
+      "modality": "OPTICAL"
+    }
+  ],
+  "query_understanding": {
+    "tasks": [
+      "LAND_COVER"
+    ],
+    "modalities": [
+      "OPTICAL"
+    ]
+  },
+  "router_decision": {
+    "execution_steps": [
+      {
+        "step_id": "step_1",
+        "agent_id": "rs_vqa_model",
+        "agent_name": "Remote Sensing VQA Model",
+        "agent_version": "2.1.0",
+        "capability": "visual_question_answering",
+        "parameters": {
+          "confidence_threshold": 0.8
+        }
+      }
+    ]
+  },
+  "selected_agents": [
+    {
+      "step_id": "step_1",
+      "agent_id": "rs_vqa_model",
+      "agent_name": "Remote Sensing VQA Model",
+      "agent_version": "2.1.0",
+      "capability": "visual_question_answering",
+      "parameters": {
+        "confidence_threshold": 0.8
+      }
+    }
+  ],
+  "spans": [
+    {
+      "span_id": "spn_9dfa8ca0dba4",
+      "parent_span_id": null,
+      "name": "Remote Sensing VQA Model",
+      "component": "agent",
+      "agent_id": "rs_vqa_model",
+      "agent_name": "Remote Sensing VQA Model",
+      "agent_version": "2.1.0",
+      "start_time": 1789410116.6310856,
+      "end_time": 1789410116.6815748,
+      "duration_ms": 50.49,
+      "status": "SUCCESS",
+      "confidence": 0.95,
+      "input_references": {},
+      "output_references": {
+        "raw_output": {
+          "answer": "The image shows agricultural fields and river streams."
+        },
+        "execution_id": "exec_101",
+        "agent_id": "rs_vqa_model"
+      },
+      "evidence_references": [
+        {
+          "evidence_id": "ev_1",
+          "evidence_type": "text_rationale",
+          "confidence": 0.95
+        }
+      ],
+      "parameters": {},
+      "retries": 0,
+      "retry_history": [],
+      "fallbacks": 0,
+      "fallback_history": [],
+      "error": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt_spn_17dbad2e067f",
+      "timestamp": 1789410116.6308217,
+      "iso_timestamp": "2026-09-14T18:21:56.630950+00:00",
+      "event_type": "trace_started",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_471768c64b5c45f4 started for Request REQ_TEST_001",
+      "payload": {
+        "query": "Describe the land-cover and major objects visible in this optical image.",
+        "image_count": 1
+      }
+    },
+    {
+      "event_id": "evt_spn_e0d231161955",
+      "timestamp": 1789410116.630974,
+      "iso_timestamp": "2026-09-14T18:21:56.631012+00:00",
+      "event_type": "query_understanding_completed",
+      "component": "query_understanding",
+      "status": "success",
+      "message": "Query understanding completed successfully",
+      "payload": {
+        "tasks": [
+          "LAND_COVER"
+        ],
+        "modalities": [
+          "OPTICAL"
+        ]
+      }
+    },
+    {
+      "event_id": "evt_spn_1a9844e7388e",
+      "timestamp": 1789410116.6310394,
+      "iso_timestamp": "2026-09-14T18:21:56.631068+00:00",
+      "event_type": "router_decision_completed",
+      "component": "router",
+      "status": "success",
+      "message": "Router selected 1 agent(s)",
+      "payload": {
+        "selected_agent_ids": [
+          "rs_vqa_model"
+        ]
+      }
+    },
+    {
+      "event_id": "evt_spn_24bf29162269",
+      "timestamp": 1789410116.6818042,
+      "iso_timestamp": "2026-09-14T18:21:56.681995+00:00",
+      "event_type": "trace_finalized",
+      "component": "trace_service",
+      "status": "success",
+      "message": "Trace trc_471768c64b5c45f4 finalized with status SUCCESS",
+      "payload": {
+        "total_duration_ms": 50.98,
+        "final_status": "SUCCESS"
+      }
+    }
+  ],
+  "total_duration_ms": 50.98,
+  "status": "SUCCESS",
+  "metrics": {
+    "span_count": 1,
+    "successful_spans": 1,
+    "failed_spans": 0,
+    "fallback_spans": 0
+  }
+}
