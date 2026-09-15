@@ -1,0 +1,22 @@
+# Optional dependencies for running REAL RS-LLaVA (7B parameter) inference
+#
+# IMPORTANT NOTICE:
+# - Do NOT install these on low-VRAM laptops (such as GTX 1650 4GB) for standard API/mock development.
+# - The default Person 3 pipeline runs entirely using lightweight mock models.
+# - Install these ONLY on a machine with sufficient GPU VRAM (>= 16GB VRAM for 16-bit or >= 8GB for 4-bit)
+#   or when running dedicated GPU server inference.
+#
+# Also requires cloning and installing the official RS-LLaVA repository:
+#   git clone https://github.com/BigData-KSU/RS-LLaVA.git
+#   pip install -e RS-LLaVA
+
+torch>=2.1.0
+transformers==4.35
+einops
+SentencePiece
+accelerate
+peft
+Pillow>=10.0.0
+
+# Optional quantization (enable only if RSLLAVA_LOAD_IN_4BIT=true)
+# bitsandbytes>=0.41.0
