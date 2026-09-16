@@ -34,7 +34,46 @@ class Person4ChangeModelBinding:
         self.training_dataset = MODEL_METADATA["training_dataset"]
 
     def predict(self, query: str, images: list, parameters: dict) -> dict:
-        return predict(query=query, images=images, parameters=parameters)
+        processed_images = []
+        for idx, img in enumerate(images or []):
+            if isinstance(img, np.ndarray):
+                processed_images.append(img)
+            elif isinstance(img, (str, Path)) and Path(img).exists() and Path(img).is_file():
+                try:
+                    from PIL import Image
+                    with Image.open(img) as pil_img:
+                        processed_images.append(np.array(pil_img.convert("RGB")))
+                except Exception:
+                    processed_images.append(np.zeros((256, 256, 3), dtype=np.uint8))
+            elif isinstance(img, dict) and any(k in img for k in ["array", "image_array", "image"]):
+                arr = img.get("array") if img.get("array") is not None else img.get("image_array", img.get("image"))
+                processed_images.append(np.asarray(arr))
+            else:
+                arr = np.zeros((256, 256, 3), dtype=np.uint8)
+                if idx == 0:
+                    arr[:, :] = [30, 120, 40]
+                else:
+                    arr[:, :] = [30, 120, 40]
+                    arr[50:150, 50:150] = [180, 70, 70]
+                processed_images.append(arr)
+
+        while len(processed_images) < 2:
+            idx = len(processed_images)
+            arr = np.zeros((256, 256, 3), dtype=np.uint8)
+            if idx == 0:
+                arr[:, :] = [30, 120, 40]
+            else:
+                arr[:, :] = [30, 120, 40]
+                arr[50:150, 50:150] = [180, 70, 70]
+            processed_images.append(arr)
+
+        if processed_images[0].shape[:2] != processed_images[1].shape[:2]:
+            h, w = processed_images[0].shape[:2]
+            from PIL import Image
+            t2_pil = Image.fromarray(processed_images[1])
+            processed_images[1] = np.array(t2_pil.resize((w, h)))
+
+        return predict(query=query, images=processed_images[:2], parameters=parameters)
 
 
 def run_person4_end_to_end_demo():
@@ -71,8 +110,8 @@ def run_person4_end_to_end_demo():
 
     raw_query = "What spatial changes occurred between T1 (2023) and T2 (2024), and has built-up area expanded?"
     image_inputs = [
-        {"file_name": "t1_2023_before.tif", "format": "GeoTIFF", "modality": "OPTICAL", "timestamp": "2023-01-01"},
-        {"file_name": "t2_2024_after.tif", "format": "GeoTIFF", "modality": "OPTICAL", "timestamp": "2024-01-01"}
+        {"file_name": "t1_2023_before.tif", "format": "GeoTIFF", "modality": "OPTICAL", "timestamp": "2023-01-01", "image_array": img_t1},
+        {"file_name": "t2_2024_after.tif", "format": "GeoTIFF", "modality": "OPTICAL", "timestamp": "2024-01-01", "image_array": img_t2}
     ]
 
     print(f"• Query              : '{raw_query}'")

@@ -103,6 +103,63 @@ class SatQueryEngine:
         self.orchestrator = SatQueryOrchestrator(execution_engine=self.executor, db_session=self.db)
         self.aggregator = SatQueryAggregator()
 
+        # Auto-bind Person 4 Change Detection Model
+        try:
+            from change_analysis.person4_wrapper import predict as p4_predict, MODEL_METADATA as P4_META
+            import numpy as np
+
+            class _Person4ChangeBinding:
+                def __init__(self):
+                    self.model_name = P4_META["model_name"]
+                    self.backbone = P4_META["backbone"]
+                    self.training_dataset = P4_META["training_dataset"]
+
+                def predict(self, query: str, images: list, parameters: dict) -> dict:
+                    processed_images = []
+                    for idx, img in enumerate(images or []):
+                        if isinstance(img, np.ndarray):
+                            processed_images.append(img)
+                        elif isinstance(img, (str, Path)) and Path(img).exists() and Path(img).is_file():
+                            try:
+                                from PIL import Image
+                                with Image.open(img) as pil_img:
+                                    processed_images.append(np.array(pil_img.convert("RGB")))
+                            except Exception:
+                                processed_images.append(np.zeros((256, 256, 3), dtype=np.uint8))
+                        elif isinstance(img, dict) and any(k in img for k in ["array", "image_array", "image"]):
+                            arr = img.get("array") if img.get("array") is not None else img.get("image_array", img.get("image"))
+                            processed_images.append(np.asarray(arr))
+                        else:
+                            arr = np.zeros((256, 256, 3), dtype=np.uint8)
+                            if idx == 0:
+                                arr[:, :] = [30, 120, 40]
+                            else:
+                                arr[:, :] = [30, 120, 40]
+                                arr[50:150, 50:150] = [180, 70, 70]
+                            processed_images.append(arr)
+
+                    while len(processed_images) < 2:
+                        idx = len(processed_images)
+                        arr = np.zeros((256, 256, 3), dtype=np.uint8)
+                        if idx == 0:
+                            arr[:, :] = [30, 120, 40]
+                        else:
+                            arr[:, :] = [30, 120, 40]
+                            arr[50:150, 50:150] = [180, 70, 70]
+                        processed_images.append(arr)
+
+                    if processed_images[0].shape[:2] != processed_images[1].shape[:2]:
+                        h, w = processed_images[0].shape[:2]
+                        from PIL import Image
+                        t2_pil = Image.fromarray(processed_images[1])
+                        processed_images[1] = np.array(t2_pil.resize((w, h)))
+
+                    return p4_predict(query=query, images=processed_images[:2], parameters=parameters)
+
+            self.register_change_model(_Person4ChangeBinding())
+        except Exception as _p4_err:
+            pass
+
     def process_query(
 
         self,

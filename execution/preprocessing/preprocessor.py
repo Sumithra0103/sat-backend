@@ -18,13 +18,15 @@ class PreprocessedBatch:
         selected_bands: List[str],
         target_size: Tuple[int, int],
         normalization_method: str,
-        tiles_generated: int = 1
+        tiles_generated: int = 1,
+        raw_images: Optional[List[Any]] = None
     ):
         self.tensors = tensors
         self.selected_bands = selected_bands
         self.target_size = target_size
         self.normalization_method = normalization_method
         self.tiles_generated = tiles_generated
+        self.raw_images = raw_images or []
 
 
 class ImagePreprocessor:
@@ -114,10 +116,15 @@ class ImagePreprocessor:
                 }
             ))
 
+        raw_images = [r.array for r in rasters if hasattr(r, "array") and r.array is not None]
+        if not raw_images:
+            raw_images = [r.metadata.file_path for r in rasters if hasattr(r, "metadata") and r.metadata]
+
         return PreprocessedBatch(
             tensors=processed_tensors,
             selected_bands=list(set(all_selected_bands)),
             target_size=target_size,
             normalization_method=norm_method,
-            tiles_generated=total_tiles
+            tiles_generated=total_tiles,
+            raw_images=raw_images
         )

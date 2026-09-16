@@ -17,11 +17,13 @@ class LoadedRaster:
         self,
         metadata: GeospatialMetadata,
         raw_bands: Dict[str, Any],
-        shape: Tuple[int, int, int]
+        shape: Tuple[int, int, int],
+        array: Optional[Any] = None
     ):
         self.metadata = metadata
         self.raw_bands = raw_bands  # band_name -> 2D data or array
         self.shape = shape          # (height, width, num_bands)
+        self.array = array
 
     @property
     def width(self) -> int:
@@ -118,8 +120,35 @@ class ImageLoader:
                 }
             ))
 
+        # Extract or synthesize image array for downstream model consumption
+        array = None
+        for k in ["image_array", "array", "image"]:
+            if k in image_input and image_input[k] is not None:
+                try:
+                    import numpy as np
+                    array = np.asarray(image_input[k])
+                    break
+                except Exception:
+                    pass
+
+        if array is None and file_path:
+            p = Path(file_path)
+            if p.exists() and p.is_file():
+                try:
+                    from PIL import Image
+                    import numpy as np
+                    with Image.open(p) as img:
+                        array = np.array(img.convert("RGB"))
+                except Exception:
+                    pass
+
+        if array is None:
+            import numpy as np
+            array = np.zeros((height, width, len(bands)), dtype=np.uint8)
+
         return LoadedRaster(
             metadata=metadata,
             raw_bands=raw_bands,
-            shape=(height, width, len(bands))
+            shape=(height, width, len(bands)),
+            array=array
         )

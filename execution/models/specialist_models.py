@@ -10,9 +10,12 @@ Implements domain-adapted inference for:
 
 import math
 import re
+import logging
 from typing import Dict, Any, List, Optional
 from execution.schemas import EvidenceItem, EvidenceType
 from execution.preprocessing.preprocessor import PreprocessedBatch
+
+logger = logging.getLogger(__name__)
 
 
 class SpecialistModelBase:
@@ -330,25 +333,40 @@ class RSChangeDetectionModel(SpecialistModelBase):
             try:
                 # Extract image list (T1, T2)
                 raw_images = getattr(batch, "raw_images", [])
+                if not raw_images and hasattr(batch, "tensors"):
+                    raw_images = [t.get("file_path") for t in getattr(batch, "tensors", []) if isinstance(t, dict) and t.get("file_path")]
                 if not raw_images and hasattr(batch, "metadata"):
                     raw_images = [batch.metadata]
-                
+
                 custom_res = custom_model.predict(query=query, images=raw_images, parameters=parameters)
-                
+
                 if isinstance(custom_res, dict):
+                    raw_regions = custom_res.get("changed_regions", custom_res.get("number_of_regions", 0))
+                    changed_regions = int(raw_regions) if raw_regions is not None else 0
+
+                    raw_area = custom_res.get("changed_area_km2", 0.0)
+                    changed_area_km2 = float(raw_area) if raw_area is not None else 0.0
+
+                    raw_conf = custom_res.get("confidence", 0.93)
+                    confidence = float(raw_conf) if raw_conf is not None else 0.93
+
+                    change_map = str(custom_res.get("change_map") or "spatial_change_map_bitemporal_cdvqa.png")
+                    change_trend = str(custom_res.get("change_trend") or "remained_unchanged")
+                    change_desc = str(custom_res.get("change_description") or "Bi-temporal change detected.")
+
                     return {
-                        "changed_regions": int(custom_res.get("changed_regions", 15)),
-                        "change_map": str(custom_res.get("change_map", "spatial_change_map_bitemporal_cdvqa.png")),
-                        "change_trend": str(custom_res.get("change_trend", "increased")),
-                        "change_description": str(custom_res.get("change_description", "Bi-temporal change detected.")),
-                        "changed_area_km2": float(custom_res.get("changed_area_km2", 2.45)),
-                        "confidence": float(custom_res.get("confidence", 0.93)),
+                        "changed_regions": changed_regions,
+                        "change_map": change_map,
+                        "change_trend": change_trend,
+                        "change_description": change_desc,
+                        "changed_area_km2": changed_area_km2,
+                        "confidence": confidence,
                         "domain_adaptation": str(getattr(custom_model, "training_dataset", self.training_dataset)),
                         "backbone": str(getattr(custom_model, "backbone", self.backbone))
                     }
             except Exception as e:
-                # Fallback to analytical baseline on exception
-                pass
+                logger.error(f"Person 4 Change Detection execution error: {e}")
+                raise e
 
         # Fallback domain-adapted analytical baseline
         q_lower = query.lower()
