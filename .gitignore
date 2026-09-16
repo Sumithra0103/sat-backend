@@ -68,9 +68,17 @@ agent_registry.db
 # Environment variables and secrets
 .env
 .env.*
+!.env.example
+
 
 # Large model weight files
 *.safetensors
 *.bin
 *.pt
 *.pth
+
+# Uploads & Artifacts directories
+uploads/
+evidence_artifacts/
+outputs/
+

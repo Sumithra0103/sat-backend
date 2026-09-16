@@ -10,6 +10,7 @@ FastAPI application exposing full agentic pipeline capabilities:
 
 import os
 import sys
+import uuid
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
@@ -29,7 +30,7 @@ if str(_ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(_ROOT_DIR))
 
 
-from fastapi import FastAPI, HTTPException, status, Depends, Query as FastAPIQuery
+from fastapi import FastAPI, HTTPException, status, Depends, Request, File, UploadFile, Form, Query as FastAPIQuery
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
@@ -42,12 +43,14 @@ from schemas.agent_schema import AgentRegisterRequest, AgentResponse, AgentStatu
 from database import init_db, get_db
 from database.connection import check_db_health
 from database.repositories import AgentRepository, QueryRepository, TraceRepository
+from database.supabase_storage import SupabaseStorageClient
 
 
 # --- Pydantic API Schemas ---
 
 class ImageInputSchema(BaseModel):
     image_id: Optional[str] = None
+    url: Optional[str] = None
     file_name: str
     format: str = "GeoTIFF"
     modality: str = "OPTICAL"
@@ -55,6 +58,7 @@ class ImageInputSchema(BaseModel):
     timestamp: Optional[str] = None
     bounds: Optional[List[float]] = None
     is_co_registered: Optional[bool] = None
+    base64_data: Optional[str] = None
 
 
 class ProcessQueryRequest(BaseModel):
@@ -118,6 +122,79 @@ def health_check():
         "redoc_url": "/redoc"
     }
 
+
+@app.post("/api/upload", status_code=status.HTTP_201_CREATED, tags=["Image Upload"])
+async def upload_image_endpoint(
+    file: UploadFile = File(...),
+    modality: Optional[str] = Form("OPTICAL"),
+    sensor_type: Optional[str] = Form(None),
+    bounds: Optional[str] = Form(None),
+    user_id: Optional[str] = Form(None)
+):
+    """
+    Upload satellite / remote sensing binary image (GeoTIFF, TIFF, PNG, JPEG)
+    directly to Supabase Storage. Returns storage path + public HTTPS URL.
+    """
+    try:
+        filename = file.filename or "image.tif"
+        ext = Path(filename).suffix or ".tif"
+        unique_id = uuid.uuid4().hex[:10]
+        image_id = f"img_{unique_id}"
+
+        storage_filename = f"{image_id}_{filename}"
+        destination_path = f"{user_id}/{storage_filename}" if user_id else storage_filename
+
+        contents = await file.read()
+
+        lower_ext = ext.lower()
+        if lower_ext in [".tif", ".tiff"]:
+            fmt = "GeoTIFF"
+            content_type = "image/tiff"
+        elif lower_ext == ".png":
+            fmt = "PNG"
+            content_type = "image/png"
+        elif lower_ext in [".jpg", ".jpeg"]:
+            fmt = "JPEG"
+            content_type = "image/jpeg"
+        else:
+            fmt = "GeoTIFF"
+            content_type = "application/octet-stream"
+
+        parsed_bounds = None
+        if bounds:
+            try:
+                import json
+                parsed_bounds = json.loads(bounds)
+            except Exception:
+                parsed_bounds = None
+
+        storage_client = SupabaseStorageClient()
+        upload_res = storage_client.upload_image(
+            file_bytes=contents,
+            destination_path=destination_path,
+            content_type=content_type
+        )
+
+        from datetime import datetime, timezone
+        now_iso = datetime.now(timezone.utc).isoformat()
+
+        return {
+            "image_id": image_id,
+            "url": upload_res["public_url"],
+            "storage_path": upload_res["storage_path"],
+            "file_name": filename,
+            "format": fmt,
+            "modality": modality.upper() if modality else "OPTICAL",
+            "sensor_type": sensor_type,
+            "resolution_m": 10.0,
+            "bounds": parsed_bounds or [72.80, 18.90, 72.95, 19.05],
+            "uploaded_at": now_iso
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to upload image to Supabase Storage: {str(e)}"
+        )
 
 
 @app.get("/api/db/health", tags=["Health"])

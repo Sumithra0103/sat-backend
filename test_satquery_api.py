@@ -124,6 +124,35 @@ def test_trace_api_endpoints():
     assert "SatQuery AI" in viz_res.text
 
 
+def test_upload_image_endpoint():
+    dummy_bytes = b"II*\x00\x08\x00\x00\x00FAKE_GEOTIFF_DATA_BYTES"
+    files = {
+        "file": ("test_sentinel_mumbai.tif", dummy_bytes, "image/tiff")
+    }
+    data = {
+        "modality": "OPTICAL",
+        "sensor_type": "SENTINEL_2",
+        "bounds": "[72.80, 18.90, 72.95, 19.05]",
+        "user_id": "user_123"
+    }
+    response = client.post("/api/upload", files=files, data=data)
+    assert response.status_code == 201
+    res_json = response.json()
+
+    assert "image_id" in res_json
+    assert res_json["image_id"].startswith("img_")
+    assert res_json["file_name"] == "test_sentinel_mumbai.tif"
+    assert res_json["format"] == "GeoTIFF"
+    assert res_json["modality"] == "OPTICAL"
+    assert res_json["sensor_type"] == "SENTINEL_2"
+    assert res_json["bounds"] == [72.80, 18.90, 72.95, 19.05]
+    assert "url" in res_json
+    assert "supabase.co/storage/v1/object/public/satellite-images/" in res_json["url"]
+    assert "storage_path" in res_json
+    assert res_json["storage_path"].startswith("satellite-images/user_123/")
+
+
 if __name__ == "__main__":
     import pytest
     pytest.main([__file__])
+
